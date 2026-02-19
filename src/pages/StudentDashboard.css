@@ -1,0 +1,212 @@
+/* ============================================================
+   CORE DESIGN SYSTEM
+   ============================================================ */
+
+:root {
+  --primary: #6366f1;
+  --primary-dark: #4338ca;
+  --bg-gradient: radial-gradient(circle at top left, #f8fafc, #e2e8f0);
+  --glass: rgba(255, 255, 255, 0.7);
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --error: #ef4444;
+  --success: #22c55e;
+  --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ============================================================
+   GLOBAL RESET & BASE STYLES
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   CONTAINER & LAYOUT
+   ============================================================ */
+
+.student-container {
+  min-height: 100vh;
+  padding: 0 40px;
+}
+
+.student-nav {
+  transition: var(--transition-smooth);
+}
+
+/* ============================================================
+   2026 INTERACTIVE GLASS PANEL
+   ============================================================ */
+
+.glass-card-2026 {
+  position: relative;
+  background: var(--glass);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border-radius: 48px;
+  padding: 80px 60px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 0.6s ease, 
+              border 0.4s ease;
+  cursor: default;
+  z-index: 1;
+}
+
+/* THE HOVER SPOTLIGHT EFFECT */
+.glass-card-2026::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+    rgba(99, 102, 241, 0.1), 
+    transparent 40%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* PANEL MOVEMENT ON HOVER */
+.glass-card-2026:hover {
+  transform: translateY(-10px) scale(1.01);
+  box-shadow: 0 50px 80px -20px rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+/* CLICK/TOUCH COMPRESSION */
+.glass-card-2026:active {
+  transform: translateY(-4px) scale(0.99);
+  transition: transform 0.15s ease;
+}
+
+/* ============================================================
+   MODERN INPUTS & BUTTONS
+   ============================================================ */
+
+.modern-input-2026 {
+  transition: var(--transition-smooth);
+  border: 2px solid #f1f5f9;
+  outline: none;
+}
+
+.modern-input-2026:focus {
+  transform: scale(1.02);
+  background: #ffffff;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.1);
+}
+
+input::placeholder {
+  letter-spacing: normal;
+  font-weight: 500;
+  color: #cbd5e1;
+  transition: opacity 0.3s ease;
+}
+
+input:focus::placeholder {
+  opacity: 0;
+}
+
+/* BUTTON WITH RIPPLE & FUNCTION LIGHT */
+.btn-launch-2026 {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.5);
+  transition: var(--transition-smooth);
+  position: relative;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-launch-2026:hover {
+  filter: brightness(1.1);
+  letter-spacing: 2px;
+  transform: translateY(-2px);
+  box-shadow: 0 20px 30px -10px rgba(99, 102, 241, 0.7);
+}
+
+.btn-launch-2026:active {
+  transform: translateY(0) scale(0.96);
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.logo-icon {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-pop {
+  animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* ============================================================
+   RESPONSIVE SCALING (MOBILE & TABLET)
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  .student-container {
+    padding: 0 25px;
+  }
+}
+
+@media (max-width: 768px) {
+  .student-nav {
+    flex-direction: column;
+    gap: 20px;
+    text-align: center;
+    padding: 30px 0 !important;
+  }
+
+  .glass-card-2026 {
+    padding: 50px 30px !important;
+    border-radius: 32px !important;
+    margin-top: 20px;
+  }
+
+  h1 {
+    font-size: 2rem !important;
+  }
+
+  .stats-container {
+    flex-direction: column;
+    gap: 40px !important;
+    margin-top: 60px !important;
+  }
+
+  .divider-line {
+    width: 80% !important;
+    height: 1px !important;
+    background: linear-gradient(to right, transparent, #cbd5e1, transparent) !important;
+  }
+}
