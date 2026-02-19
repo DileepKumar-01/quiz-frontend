@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TeacherDashboard.css"; // Reuse existing styles for consistency
+import StudentDashboard from "./pages/StudentDashboard";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
