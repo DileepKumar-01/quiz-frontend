@@ -87,8 +87,9 @@ export default function TeacherDashboard() {
     setIsUpdating(true);
 
     try {
+      // ✅ MODIFIED URL BELOW
       const response = await fetch(
-        `https://quiz-backend-1uzu.onrender.com/api/update-profile/${user.id}`,
+        `https://quiz-backend-68mu.onrender.com/api/auth/update-profile/${user.id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -169,7 +170,8 @@ export default function TeacherDashboard() {
 
     setIsPublishing(true);
     try {
-      const response = await fetch("https://quiz-backend-1uzu.onrender.com/api/create-quiz", {
+      // ✅ MODIFIED URL BELOW
+      const response = await fetch("https://quiz-backend-68mu.onrender.com/api/quiz/create-quiz", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

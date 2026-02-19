@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TeacherDashboard.css"; // Reuse existing styles for consistency
-import StudentDashboard from "./pages/StudentDashboard";
+
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -41,10 +41,11 @@ export default function StudentDashboard() {
     // NEW: Fetch Student Results
     const fetchResults = async () => {
       try {
-        const response = await fetch(`https://quiz-backend-1uzu.onrender.com/api/student-results/${user?.id}`);
+        // ✅ MODIFIED URL BELOW
+        const response = await fetch(`https://quiz-backend-68mu.onrender.com/api/quiz/teacher-stats/${user?.id}`);
         const data = await response.json();
         if (response.ok) {
-          setResults(data);
+          setResults(data.submissions || []);
         }
       } catch (err) {
         console.error("Failed to fetch results history");
@@ -89,8 +90,8 @@ export default function StudentDashboard() {
     setIsUpdating(true); // Start "Click Feel" loading state
 
     try {
-      // FIXED BACKEND SYNC: URL now includes /${user.id} to match backend params
-      const response = await fetch(`https://quiz-backend-1uzu.onrender.com/api/update-profile/${user.id}`, {
+      // ✅ MODIFIED URL BELOW
+      const response = await fetch(`https://quiz-backend-68mu.onrender.com/api/auth/update-profile/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -293,13 +294,13 @@ export default function StudentDashboard() {
               </thead>
               <tbody>
                 {results.length > 0 ? results.map((item, index) => {
-                  const percentage = Math.round((item.score / item.totalQuestions) * 100);
+                  const percentage = Math.round((item.score / item.totalMarks) * 100);
                   const isPass = percentage >= 50;
 
                   return (
                     <tr key={index} style={{borderBottom: '1px solid #f1f5f9'}}>
                       <td style={{padding: '15px', fontWeight: '700', color: '#1e293b'}}>{item.quizTitle}</td>
-                      <td style={{padding: '15px', color: '#475569'}}>{item.score} / {item.totalQuestions}</td>
+                      <td style={{padding: '15px', color: '#475569'}}>{item.score} / {item.totalMarks}</td>
                       <td style={{padding: '15px', width: '30%'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
                           <div style={{flex: 1, height: '8px', background: '#f1f5f9', borderRadius: '4px', overflow: 'hidden'}}>

@@ -11,7 +11,8 @@ export default function TeacherAnalytics() {
     const fetchAllData = async () => {
       try {
         // 1. Fetch all submissions for this teacher's quizzes
-        const response = await fetch(`https://quiz-backend-1uzu.onrender.com/api/teacher-stats/${user?.id}`);
+        // ✅ MODIFIED URL BELOW TO USE 68mu BACKEND
+        const response = await fetch(`https://quiz-backend-68mu.onrender.com/api/quiz/teacher-stats/${user?.id}`);
         const data = await response.json();
         
         if (response.ok) {
