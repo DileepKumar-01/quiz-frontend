@@ -5,6 +5,7 @@ import api from "../api";
 
 export default function Register() {
   const [role, setRole] = useState("student");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -18,10 +19,7 @@ export default function Register() {
   });
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
@@ -33,7 +31,8 @@ export default function Register() {
     }
 
     try {
-      // Explicitly mapping formData.id to the 'id' key for the backend 
+      setLoading(true);
+      // baseURL has /api, so this effectively calls /api/auth/register
       const response = await api.post("/auth/register", { 
         name: formData.name,
         email: formData.email,
@@ -41,17 +40,18 @@ export default function Register() {
         gender: formData.gender,
         password: formData.password,
         role: role,
-        id: formData.id // This matches 'id' in your authRoutes.js logic
+        id: formData.id 
       });
 
       if (response.status === 201 || response.status === 200) {
-        alert("Registration Successful! Data saved to MongoDB.");
-        navigate("/"); // Redirect to Login
+        alert("Registration Successful!");
+        navigate("/"); 
       }
     } catch (error) {
-      const errorMsg = error.response?.data?.message || "Server Error: Backend is not reachable";
+      const errorMsg = error.response?.data?.message || "Server Error: Backend unreachable";
       alert("Registration Failed: " + errorMsg);
-      console.error("Register Error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,35 +66,29 @@ export default function Register() {
         <div style={styles.divider}>OR</div>
 
         <form onSubmit={handleSubmit}>
-          <select value={role} onChange={(e) => setRole(e.target.value)} style={styles.input}>
+          <select value={role} onChange={(e) => setRole(e.target.value)} style={styles.input} disabled={loading}>
             <option value="student">Student</option>
             <option value="teacher">Teacher</option>
           </select>
 
-          <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} style={styles.input} required />
-          <input 
-             type="text" 
-             name="id" 
-             placeholder={role === "student" ? "Registration Number" : "Teacher ID"} 
-             value={formData.id} 
-             onChange={handleChange} 
-             style={styles.input} 
-             required 
-          />
-          <input type="email" name="email" placeholder="Gmail Address" value={formData.email} onChange={handleChange} style={styles.input} required />
-          <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} style={styles.input} required />
+          <input type="text" name="name" placeholder="Full Name" value={formData.name} onChange={handleChange} style={styles.input} required disabled={loading} />
+          <input type="text" name="id" placeholder={role === "student" ? "Registration Number" : "Teacher ID"} value={formData.id} onChange={handleChange} style={styles.input} required disabled={loading} />
+          <input type="email" name="email" placeholder="Gmail Address" value={formData.email} onChange={handleChange} style={styles.input} required disabled={loading} />
+          <input type="tel" name="phone" placeholder="Phone Number" value={formData.phone} onChange={handleChange} style={styles.input} required disabled={loading} />
           
-          <select name="gender" value={formData.gender} onChange={handleChange} style={styles.input} required>
+          <select name="gender" value={formData.gender} onChange={handleChange} style={styles.input} required disabled={loading}>
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="other">Other</option>
           </select>
 
-          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} style={styles.input} required />
-          <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} style={styles.input} required />
+          <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} style={styles.input} required disabled={loading} />
+          <input type="password" name="confirmPassword" placeholder="Confirm Password" value={formData.confirmPassword} onChange={handleChange} style={styles.input} required disabled={loading} />
 
-          <button type="submit" style={styles.button}>Register</button>
+          <button type="submit" style={styles.button} disabled={loading}>
+            {loading ? "Registering..." : "Register"}
+          </button>
         </form>
         <p>Already have an account? <Link to="/">Login</Link></p>
       </div>

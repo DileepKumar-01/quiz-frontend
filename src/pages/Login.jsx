@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api"; // Use our centralized API config
+import api from "../api";
 
 export default function Login() {
   const [role, setRole] = useState("student");
@@ -21,13 +21,13 @@ export default function Login() {
     try {
       setLoading(true);
 
-      // Using the 'api' instance automatically prepends the correct Render URL
-      // Added '/auth' because of your server.js route configuration
+      // ✅ FIXED ROUTE HERE
       const response = await api.post("/auth/login", {
-        regNo: regNo.trim(),
-        password: password.trim(),
-        role
-      });
+  regNo: regNo.trim(),
+  password: password.trim(),
+  role
+});
+
 
       const data = response.data;
       console.log("LOGIN SUCCESS:", data);
@@ -45,8 +45,11 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Login Error:", error);
-      // Backend returns specific messages like "User not found" or "Invalid credentials"
-      const message = error.response?.data?.message || "Server Error: Backend unreachable";
+
+      const message =
+        error.response?.data?.message ||
+        "Server Error: Backend unreachable";
+
       alert(message);
     } finally {
       setLoading(false);
