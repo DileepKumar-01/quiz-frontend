@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import TeacherAnalytics from "../components/TeacherAnalytics";
+import TeacherAnalytics from "../Components/TeacherAnalytics";
 import "./TeacherDashboard.css";
 
 export default function TeacherDashboard() {
