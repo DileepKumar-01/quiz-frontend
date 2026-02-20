@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./TeacherDashboard.css"; // Reuse existing styles for consistency
-
+// ✅ IMPORT LOGO
+import logo from "../assets/logo.png";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -90,7 +91,7 @@ export default function StudentDashboard() {
     setIsUpdating(true); // Start "Click Feel" loading state
 
     try {
-      // ✅ MODIFIED URL BELOW
+      //  MODIFIED URL BELOW
       const response = await fetch(`https://quiz-backend-68mu.onrender.com/api/auth/update-profile/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -140,7 +141,11 @@ export default function StudentDashboard() {
     <div className="dashboard-container">
       {/* NAVBAR MATCHING TEACHER VIEW */}
       <nav className="navbar">
-        <h2 style={{margin: 0}}>Quiz<span style={{color: 'var(--primary)'}}>Pro</span></h2>
+        {/* ✅ LOGO INTEGRATED HERE */}
+        <div style={{display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer'}} onClick={() => navigate("/studentdashboard")}>
+           <img src={logo} alt="QuizPro Logo" style={{height: '40px', width: 'auto'}} />
+           <h2 style={{margin: 0}}>Quiz<span style={{color: 'var(--primary)'}}>Pro</span></h2>
+        </div>
         
         <div className="profile-section">
           <div className="profile-trigger" onClick={() => setShowDropdown(!showDropdown)}>
@@ -299,7 +304,7 @@ export default function StudentDashboard() {
 
                   return (
                     <tr key={index} style={{borderBottom: '1px solid #f1f5f9'}}>
-                      <td style={{padding: '15px', fontWeight: '700', color: '#1e293b'}}>{item.quizTitle}</td>
+                      <td style={{padding: '15px', fontWeight: '700', color: '#1e292b'}}>{item.quizTitle}</td>
                       <td style={{padding: '15px', color: '#475569'}}>{item.score} / {item.totalMarks}</td>
                       <td style={{padding: '15px', width: '30%'}}>
                         <div style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
