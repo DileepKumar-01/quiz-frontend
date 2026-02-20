@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../api'; // NEW: Importing your centralized API config
+import api from '../../api'; // Centralized API config
 import './Quiz.css';
 
 const Quiz = () => {
@@ -16,24 +16,22 @@ const Quiz = () => {
     const [finalScore, setFinalScore] = useState(0);
     const [loading, setLoading] = useState(true);
     
-    // NEW: Timer State (timeLeft in seconds)
+    // Timer State (timeLeft in seconds)
     const [timeLeft, setTimeLeft] = useState(null);
 
     // --- FETCH QUIZ DATA ---
     useEffect(() => {
         const fetchQuiz = async () => {
             try {
-                // MODIFIED: Using centralized api.get instead of full fetch URL
-                const res = await api.get(`/quiz-by-code/${code}`);
-                const data = res.data; // Axios stores response in .data
+                // ✅ FIXED: Added missing /quiz prefix to match server.js routes
+                const res = await api.get(`/quiz/quiz-by-code/${code}`);
+                const data = res.data; 
                 
                 setQuizData(data);
-                // Initialize timer from DB duration (minutes converted to seconds)
                 if (data.duration) {
                     setTimeLeft(data.duration * 60);
                 }
             } catch (err) {
-                // MODIFIED: Improved error handling with Axios
                 alert(err.response?.data?.message || "Error connecting to server");
                 navigate("/studentdashboard");
             } finally {
@@ -45,16 +43,13 @@ const Quiz = () => {
 
     // --- TIMER LOGIC AND AUTO-SUBMIT TRIGGER ---
     useEffect(() => {
-        // Only run timer if quiz is loaded and not yet submitted
         if (timeLeft === null || isSubmitted) return;
 
-        // Trigger Auto-Submit when clock hits zero
         if (timeLeft <= 0) {
             autoSubmitQuiz(); 
             return;
         }
 
-        // Standard 1-second interval for countdown
         const timerId = setInterval(() => {
             setTimeLeft(prev => prev - 1);
         }, 1000);
@@ -63,8 +58,6 @@ const Quiz = () => {
     }, [timeLeft, isSubmitted]);
 
     // --- HELPER FUNCTIONS ---
-    
-    // Formats seconds into MM:SS display
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -73,7 +66,6 @@ const Quiz = () => {
 
     const handleOptionClick = (option) => {
         if (isSubmitted) return;
-        // Stores answer based on current question index
         setAnswers({ ...answers, [index]: option });
     };
 
@@ -81,24 +73,21 @@ const Quiz = () => {
         setIndex(i);
     };
 
-    // Manual Submission (with confirmation)
     const submitQuiz = async () => {
         const confirmSubmit = window.confirm("Ready to complete the quiz?");
         if (!confirmSubmit) return;
         await processSubmission();
     };
 
-    // Automatic Submission (without confirmation)
     const autoSubmitQuiz = async () => {
         alert("Time is up! Submitting your answers automatically.");
         await processSubmission();
     };
 
-    // Shared API call logic for both Manual and Auto submission
     const processSubmission = async () => {
         try {
-            // MODIFIED: Using centralized api.post for cleaner submission
-            const res = await api.post("/submit-quiz", {
+            // ✅ FIXED: Added missing /quiz prefix to match server.js routes
+            const res = await api.post("/quiz/submit-quiz", {
                 quizId: quizData._id,
                 studentId: user.id,
                 studentName: user.name,
@@ -120,7 +109,6 @@ const Quiz = () => {
 
     return (
         <div className='quiz-page-layout'>
-            {/* SIDEBAR NAVIGATION - Student can jump to any question */}
             <div className="quiz-sidebar">
                 <h3>Quiz Progress</h3>
                 <div className="question-grid">
@@ -135,7 +123,6 @@ const Quiz = () => {
                     ))}
                 </div>
 
-                {/* TIMER DISPLAY - Visible in sidebar for constant tracking */}
                 {!isSubmitted && (
                     <div className={`timer-display ${timeLeft < 60 ? 'timer-warning' : ''}`}>
                         Time Remaining: {formatTime(timeLeft)}
@@ -147,7 +134,6 @@ const Quiz = () => {
                 </div>
             </div>
 
-            {/* MAIN QUIZ AREA */}
             <div className="quiz-main-container">
                 <h1>{quizData.title}</h1>
                 <hr />
@@ -157,12 +143,11 @@ const Quiz = () => {
                             <h2>{index + 1}. {currentQuestion.question}</h2>
                             <ul className="options-list">
                                 {currentQuestion.options.map((opt, i) => {
-                                    // Visual Color Logic: Green for Correct, Red for Wrong
                                     let feedbackClass = "";
                                     if (answers[index] === opt) {
                                         feedbackClass = (opt === currentQuestion.correctAnswer) ? "correct-opt" : "wrong-opt";
                                     } else if (answers[index] && opt === currentQuestion.correctAnswer) {
-                                        feedbackClass = "correct-opt"; // Reveals correct answer if student picked wrong
+                                        feedbackClass = "correct-opt"; 
                                     }
 
                                     return (
@@ -178,7 +163,6 @@ const Quiz = () => {
                             </ul>
                         </div>
 
-                        {/* NAVIGATION BUTTONS */}
                         <div className="nav-controls">
                             <button className="prev-btn" disabled={index === 0} onClick={() => setIndex(index - 1)}>Previous</button>
                             {index < quizData.questions.length - 1 ? (
@@ -189,7 +173,6 @@ const Quiz = () => {
                         </div>
                     </>
                 ) : (
-                    // RESULT VIEW
                     <div className="results-container">
                         <h2>Assessment Complete!</h2>
                         <div className="final-score">

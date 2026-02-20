@@ -32,7 +32,7 @@ export default function Register() {
 
     try {
       setLoading(true);
-      // baseURL has /api, so this effectively calls /api/auth/register
+      // baseURL has /api, so this effectively calls /auth/register
       const response = await api.post("/auth/register", { 
         name: formData.name,
         email: formData.email,
@@ -40,7 +40,7 @@ export default function Register() {
         gender: formData.gender,
         password: formData.password,
         role: role,
-        id: formData.id 
+        regNo: formData.id // ✅ FIXED: Changed 'id' to 'regNo' to match backend field name
       });
 
       if (response.status === 201 || response.status === 200) {
