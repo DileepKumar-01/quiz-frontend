@@ -1,37 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../api'; // Centralized API config
+import api from '../../api'; 
 import './Quiz.css';
 
 const Quiz = () => {
     const { code } = useParams();
     const navigate = useNavigate();
-    const user = JSON.parse(localStorage.getItem("user"));
+    
+    // Retrieve and parse user data safely
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
 
-    // --- STATES ---
     const [quizData, setQuizData] = useState(null);
     const [index, setIndex] = useState(0);
     const [answers, setAnswers] = useState({}); 
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [finalScore, setFinalScore] = useState(0);
     const [loading, setLoading] = useState(true);
-    
-    // Timer State (timeLeft in seconds)
     const [timeLeft, setTimeLeft] = useState(null);
 
-    // --- FETCH QUIZ DATA ---
     useEffect(() => {
+        // Redirect if student session is missing
+        if (!user) {
+            navigate("/");
+            return;
+        }
+
         const fetchQuiz = async () => {
             try {
-                // ✅ FIXED: Added missing /quiz prefix to match server.js routes
+                // ✅ FIXED: Using /quiz/ prefix to match backend routes
                 const res = await api.get(`/quiz/quiz-by-code/${code}`);
-                const data = res.data; 
+                setQuizData(res.data);
                 
-                setQuizData(data);
-                if (data.duration) {
-                    setTimeLeft(data.duration * 60);
+                // Initialize countdown timer based on database duration
+                if (res.data.duration) {
+                    setTimeLeft(res.data.duration * 60);
                 }
             } catch (err) {
+                // Handle 403 (wrong time) or 404 (wrong code) from backend
                 alert(err.response?.data?.message || "Error connecting to server");
                 navigate("/studentdashboard");
             } finally {
@@ -41,7 +47,6 @@ const Quiz = () => {
         fetchQuiz();
     }, [code, navigate]);
 
-    // --- TIMER LOGIC AND AUTO-SUBMIT TRIGGER ---
     useEffect(() => {
         if (timeLeft === null || isSubmitted) return;
 
@@ -57,7 +62,6 @@ const Quiz = () => {
         return () => clearInterval(timerId);
     }, [timeLeft, isSubmitted]);
 
-    // --- HELPER FUNCTIONS ---
     const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -74,9 +78,9 @@ const Quiz = () => {
     };
 
     const submitQuiz = async () => {
-        const confirmSubmit = window.confirm("Ready to complete the quiz?");
-        if (!confirmSubmit) return;
-        await processSubmission();
+        if (window.confirm("Ready to complete the quiz?")) {
+            await processSubmission();
+        }
     };
 
     const autoSubmitQuiz = async () => {
@@ -86,16 +90,14 @@ const Quiz = () => {
 
     const processSubmission = async () => {
         try {
-            // ✅ FIXED: Added missing /quiz prefix to match server.js routes
+            // ✅ FIXED: Using /quiz/ prefix to match backend routes
             const res = await api.post("/quiz/submit-quiz", {
                 quizId: quizData._id,
-                studentId: user.id,
+                studentId: user.id || user._id, 
                 studentName: user.name,
                 answers: answers
             });
-
-            const result = res.data;
-            setFinalScore(result.score);
+            setFinalScore(res.data.score);
             setIsSubmitted(true);
         } catch (err) {
             alert("Submission failed. Check connection.");
@@ -128,7 +130,6 @@ const Quiz = () => {
                         Time Remaining: {formatTime(timeLeft)}
                     </div>
                 )}
-
                 <div className="status-summary">
                     <p>Status: {Object.keys(answers).length} of {quizData.questions.length} answered</p>
                 </div>
@@ -143,26 +144,15 @@ const Quiz = () => {
                             <h2>{index + 1}. {currentQuestion.question}</h2>
                             <ul className="options-list">
                                 {currentQuestion.options.map((opt, i) => {
-                                    let feedbackClass = "";
-                                    if (answers[index] === opt) {
-                                        feedbackClass = (opt === currentQuestion.correctAnswer) ? "correct-opt" : "wrong-opt";
-                                    } else if (answers[index] && opt === currentQuestion.correctAnswer) {
-                                        feedbackClass = "correct-opt"; 
-                                    }
-
+                                    let feedbackClass = (answers[index] === opt) ? "selected-opt" : "";
                                     return (
-                                        <li 
-                                            key={i} 
-                                            className={feedbackClass}
-                                            onClick={() => handleOptionClick(opt)}
-                                        >
+                                        <li key={i} className={feedbackClass} onClick={() => handleOptionClick(opt)}>
                                             {opt}
                                         </li>
                                     );
                                 })}
                             </ul>
                         </div>
-
                         <div className="nav-controls">
                             <button className="prev-btn" disabled={index === 0} onClick={() => setIndex(index - 1)}>Previous</button>
                             {index < quizData.questions.length - 1 ? (
