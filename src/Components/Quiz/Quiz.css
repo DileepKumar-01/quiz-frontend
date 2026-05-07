@@ -1,660 +1,337 @@
-/* ============================================================
-   PROFESSIONAL QUIZ UI - CLEAN & MODERN
-   No Ugly Blue Glows, No Annoying Hover Movements
-   ============================================================ */
-
-/* Root Variables - Professional Color Palette */
-:root {
-  --primary: #4f46e5;
-  --primary-dark: #4338ca;
-  --primary-light: #eef2ff;
-  --success: #10b981;
-  --success-light: #d1fae5;
-  --danger: #ef4444;
-  --danger-light: #fee2e2;
-  --warning: #f59e0b;
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --text-light: #94a3b8;
-  --border: #e2e8f0;
-  --border-light: #f1f5f9;
-  --bg-light: #f8fafc;
-  --bg-card: #ffffff;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  --radius: 20px;
-  --radius-sm: 12px;
-  --transition: all 0.2s ease;
-}
-
-/* ============================================================
-   MAIN CONTAINER - Subtle Gradient Background
-   ============================================================ */
-
-.quiz-wrapper {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-  padding: 40px 20px;
-}
-
-.quiz-container {
-  display: flex;
-  gap: 24px;
-  max-width: 1400px;
-  width: 100%;
-  margin: 0 auto;
-  align-items: flex-start;
-  flex-wrap: wrap;
-}
-
-/* ============================================================
-   SIDEBAR - QUESTION NAVIGATION
-   ============================================================ */
-
-.quiz-sidebar {
-  width: 280px;
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: var(--shadow-md);
-  position: sticky;
-  top: 20px;
-  border: 1px solid var(--border);
-}
-
-.quiz-sidebar h3 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.quiz-sidebar .quiz-title {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-/* Question Grid - Clean Boxes */
-.question-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin: 20px 0;
-}
-
-.grid-item {
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 500;
-  font-size: 13px;
-  background: white;
-  transition: var(--transition);
-}
-
-.grid-item:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
-  transform: none;
-}
-
-.grid-item.active {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.grid-item.answered {
-  background: var(--success);
-  color: white;
-  border-color: var(--success);
-}
-
-.grid-item.answered.active {
-  background: var(--primary);
-  border-color: var(--primary);
-}
-
-/* Sidebar Stats */
-.sidebar-stats {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 0;
-  font-size: 13px;
-}
-
-.stat-label {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.stat-value {
-  font-weight: 600;
-  color: var(--text-main);
-}
-
-.timer-value {
-  font-family: monospace;
-  font-size: 14px;
-  background: var(--bg-light);
-  padding: 4px 10px;
-  border-radius: 20px;
-  color: var(--primary);
-}
-
-/* ============================================================
-   MAIN QUIZ CONTENT
-   ============================================================ */
-
-.quiz-main {
-  flex: 1;
-  background: var(--bg-card);
-  border-radius: var(--radius);
-  padding: 40px 48px;
-  box-shadow: var(--shadow-md);
-  border: 1px solid var(--border);
-  min-width: 300px;
-}
-
-.quiz-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border);
-}
-
-.question-counter {
-  font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.timer {
-  background: var(--primary);
-  color: white;
-  padding: 6px 16px;
-  border-radius: 30px;
-  font-weight: 600;
-  font-size: 16px;
-  font-family: monospace;
-}
-
-.timer-warning {
-  background: var(--danger);
-  animation: gentlePulse 1s ease-in-out infinite;
-}
-
-@keyframes gentlePulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
-}
-
-.quiz-main hr {
-  height: 1px;
-  border: none;
-  background: var(--border);
-  margin: 20px 0;
-}
-
-.quiz-main h2 {
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--text-main);
-  margin-bottom: 32px;
-}
-
-/* ============================================================
-   RADIO OPTIONS - Professional & Clean
-   ============================================================ */
-
-.options-radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 32px;
-}
-
-.radio-option {
-  display: flex;
-  align-items: center;
-  padding: 16px 20px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: white;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.radio-option:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
-  transform: none;
-}
-
-.radio-option.checked {
-  border-color: var(--primary);
-  background: var(--primary-light);
-}
-
-/* Hide default radio - NO BLUE RING */
-.radio-option input[type="radio"] {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  margin: 0;
-  padding: 0;
-}
-
-/* Custom radio circle */
-.radio-custom {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid #cbd5e1;
-  background: white;
-  margin-right: 15px;
-  position: relative;
-  transition: var(--transition);
-  flex-shrink: 0;
-}
-
-.radio-option:hover .radio-custom {
-  border-color: var(--primary);
-}
-
-.radio-option.checked .radio-custom {
-  border-color: var(--primary);
-  background: var(--primary);
-  box-shadow: inset 0 0 0 3px white;
-}
-
-/* Option Letter Badge */
-.radio-letter {
-  width: 34px;
-  height: 34px;
-  background: var(--bg-light);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
-  margin-right: 15px;
-  color: var(--text-muted);
-  transition: var(--transition);
-  flex-shrink: 0;
-}
-
-.radio-option.checked .radio-letter {
-  background: var(--primary);
-  color: white;
-}
-
-.radio-text {
-  flex: 1;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--text-main);
-  line-height: 1.4;
-}
-
-/* ============================================================
-   BUTTONS - Clean & Professional
-   ============================================================ */
-
-.quiz-controls {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.quiz-main button {
-  flex: 1;
-  height: 48px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: var(--transition);
-  border: none;
-  font-family: inherit;
-}
-
-/* Remove focus ring */
-.quiz-main button:focus {
-  outline: none;
-}
-
-.prev-btn {
-  background: white;
-  color: var(--text-main);
-  border: 1px solid var(--border);
-}
-
-.prev-btn:hover:not(:disabled) {
-  background: var(--bg-light);
-  border-color: var(--text-muted);
-  transform: none;
-}
-
-.next-btn {
-  background: var(--primary);
-  color: white;
-}
-
-.next-btn:hover:not(:disabled) {
-  background: var(--primary-dark);
-  transform: none;
-}
-
-.submit-btn {
-  background: var(--success);
-  color: white;
-}
-
-.submit-btn:hover:not(:disabled) {
-  background: #0d9668;
-  transform: none;
-}
-
-.quiz-main button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ============================================================
-   PROGRESS INDICATOR
-   ============================================================ */
-
-.index {
-  text-align: center;
-  font-size: 13px;
-  margin-top: 24px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
-  color: var(--text-muted);
-}
-
-.index span {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ============================================================
-   RESULTS SECTION
-   ============================================================ */
-
-.result-area {
-  text-align: center;
-  padding: 20px;
-}
-
-.result-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-.result-area h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-  color: var(--text-main);
-}
-
-.result-area p {
-  color: var(--text-muted);
-  margin-bottom: 30px;
-}
-
-.score-circle {
-  width: 160px;
-  height: 160px;
-  border-radius: 50%;
-  background: var(--primary-light);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 20px auto;
-}
-
-.score-number {
-  font-size: 44px;
-  font-weight: 800;
-  color: var(--primary);
-}
-
-.score-total {
-  font-size: 18px;
-  color: var(--text-muted);
-}
-
-.percentage-text {
-  font-size: 18px;
-  font-weight: 600;
-  color: var(--success);
-  margin-top: 10px;
-}
-
-.result-status {
-  display: inline-block;
-  padding: 8px 24px;
-  border-radius: 30px;
-  font-weight: 700;
-  margin: 20px 0;
-}
-
-.result-status.passed {
-  background: var(--success-light);
-  color: #065f46;
-}
-
-.result-status.failed {
-  background: var(--danger-light);
-  color: #991b1b;
-}
-
-.dashboard-btn {
-  background: var(--text-muted);
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.dashboard-btn:hover {
-  background: var(--text-main);
-  transform: none;
-}
-
-/* ============================================================
-   LOADING AND ERROR STATES
-   ============================================================ */
-
-.quiz-loading {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-}
-
-.loading-spinner {
-  width: 50px;
-  height: 50px;
-  border: 3px solid var(--border);
-  border-top: 3px solid var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.quiz-error-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
-}
-
-.error-card {
-  background: white;
-  border-radius: var(--radius);
-  padding: 40px;
-  text-align: center;
-  max-width: 500px;
-  margin: 20px;
-  box-shadow: var(--shadow-md);
-}
-
-.error-icon {
-  font-size: 64px;
-  margin-bottom: 20px;
-}
-
-.error-card h2 {
-  color: var(--text-main);
-  margin-bottom: 10px;
-}
-
-.error-card p {
-  color: var(--text-muted);
-  margin-bottom: 30px;
-}
-
-.back-btn {
-  background: var(--primary);
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.back-btn:hover {
-  background: var(--primary-dark);
-  transform: none;
-}
-
-/* ============================================================
-   RESPONSIVE DESIGN
-   ============================================================ */
-
-@media (max-width: 900px) {
-  .quiz-container {
-    flex-direction: column;
-  }
-  
-  .quiz-sidebar {
-    width: 100%;
-    position: static;
-    margin-bottom: 20px;
-  }
-  
-  .question-grid {
-    grid-template-columns: repeat(6, 1fr);
-  }
-  
-  .quiz-main {
-    padding: 30px;
-  }
-  
-  .quiz-main h2 {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 600px) {
-  .quiz-wrapper {
-    padding: 20px 15px;
-  }
-  
-  .quiz-main {
-    padding: 25px 20px;
-  }
-  
-  .quiz-header {
-    flex-direction: column;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  
-  .question-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-  
-  .quiz-controls {
-    flex-direction: column;
-  }
-  
-  .quiz-main button {
-    width: 100%;
-  }
-  
-  .score-circle {
-    width: 140px;
-    height: 140px;
-  }
-  
-  .score-number {
-    font-size: 36px;
-  }
-}
-
-@media (max-width: 480px) {
-  .quiz-main h2 {
-    font-size: 18px;
-  }
-  
-  .radio-option {
-    padding: 12px 16px;
-  }
-  
-  .radio-letter {
-    width: 28px;
-    height: 28px;
-    font-size: 12px;
-    margin-right: 12px;
-  }
-  
-  .radio-text {
-    font-size: 13px;
-  }
-  
-  .timer {
-    font-size: 14px;
-    padding: 4px 12px;
-  }
-}
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import './Quiz.css';
+
+const Quiz = () => {
+    const { code } = useParams();
+    const navigate = useNavigate();
+    const userData = localStorage.getItem("user");
+    const user = userData ? JSON.parse(userData) : null;
+
+    const [quizData, setQuizData] = useState(null);
+    const [index, setIndex] = useState(0);
+    const [answers, setAnswers] = useState({});
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [finalScore, setFinalScore] = useState(0);
+    const [finalPercentage, setFinalPercentage] = useState(0);
+    const [isPassed, setIsPassed] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [loadingMessage, setLoadingMessage] = useState("Loading your quiz...");
+    const [timeLeft, setTimeLeft] = useState(null);
+    const [error, setError] = useState(null);
+    const [retryCount, setRetryCount] = useState(0);
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/");
+            return;
+        }
+    }, [user, navigate]);
+
+    useEffect(() => {
+        const fetchQuiz = async () => {
+            if (!code || !user) return;
+            
+            try {
+                setLoading(true);
+                setLoadingMessage("Fetching quiz data...");
+                
+                // Add timeout to prevent infinite loading
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+                
+                const response = await fetch(`https://quiz-backend-68mu.onrender.com/api/quiz/quiz-by-code/${code}`, {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        const data = await response.json();
+                        setError(data.message || "Quiz not available yet");
+                    } else if (response.status === 404) {
+                        setError("Quiz not found. Please check the code and try again.");
+                    } else {
+                        setError("Server error. Please try again later.");
+                    }
+                    return;
+                }
+                
+                const data = await response.json();
+                
+                if (!data.questions || data.questions.length === 0) {
+                    setError("This quiz has no questions.");
+                    return;
+                }
+                
+                setQuizData(data);
+                if (data.duration) {
+                    setTimeLeft(data.duration * 60);
+                }
+                setLoadingMessage("Quiz ready!");
+                
+            } catch (err) {
+                console.error("Fetch error:", err);
+                if (err.name === 'AbortError') {
+                    if (retryCount < 2) {
+                        setLoadingMessage(`Connection timeout. Retrying... (${retryCount + 1}/2)`);
+                        setTimeout(() => {
+                            setRetryCount(prev => prev + 1);
+                        }, 2000);
+                    } else {
+                        setError("Connection timeout. Please check your internet and try again.");
+                    }
+                } else {
+                    setError("Network error. Please check your connection.");
+                }
+            } finally {
+                if (!error) setLoading(false);
+            }
+        };
+        
+        fetchQuiz();
+    }, [code, user, retryCount]);
+
+    // Timer countdown effect
+    useEffect(() => {
+        if (timeLeft === null || timeLeft <= 0 || isSubmitted) return;
+
+        const timerId = setInterval(() => {
+            setTimeLeft(prev => {
+                if (prev <= 1) {
+                    clearInterval(timerId);
+                    autoSubmitQuiz();
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        return () => clearInterval(timerId);
+    }, [timeLeft, isSubmitted]);
+
+    const formatTime = (seconds) => {
+        if (!seconds && seconds !== 0) return "00:00";
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handleOptionChange = (e) => {
+        if (isSubmitted) return;
+        const selectedValue = e.target.value;
+        setAnswers({ ...answers, [index]: selectedValue });
+    };
+
+    const jumpToQuestion = (i) => setIndex(i);
+
+    const submitQuiz = async () => {
+        if (window.confirm("Submit your quiz? You cannot change answers after submission."))
+            await processSubmission();
+    };
+
+    const autoSubmitQuiz = async () => {
+        alert("Time's up! Auto-submitting.");
+        await processSubmission();
+    };
+
+    const processSubmission = async () => {
+        if (isSubmitted) return;
+        
+        setLoading(true);
+        setLoadingMessage("Submitting your quiz...");
+        
+        try {
+            const response = await fetch("https://quiz-backend-68mu.onrender.com/api/quiz/submit-quiz", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    quizId: quizData._id,
+                    studentId: user.regNo || user.id,
+                    studentName: user.name,
+                    answers: answers
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                setFinalScore(data.score);
+                setFinalPercentage(data.percentage || Math.round((data.score / data.totalMarks) * 100));
+                setIsPassed(data.passed || (data.score / data.totalMarks) >= 0.5);
+                setIsSubmitted(true);
+            } else {
+                alert(data.message || "Submission failed. Please try again.");
+            }
+        } catch (err) {
+            console.error("Submission error:", err);
+            alert("Network error during submission. Please check your connection.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Retry function
+    const handleRetry = () => {
+        setError(null);
+        setLoading(true);
+        setRetryCount(0);
+        window.location.reload();
+    };
+
+    if (loading && !quizData && !error) {
+        return (
+            <div className="quiz-loading">
+                <div className="loading-spinner"></div>
+                <p>{loadingMessage}</p>
+                <p style={{ fontSize: "12px", color: "#64748b", marginTop: "10px" }}>
+                    This may take a few seconds...
+                </p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="quiz-error-container">
+                <div className="error-card">
+                    <div className="error-icon">⚠️</div>
+                    <h2>{error}</h2>
+                    <p>Quiz code: <strong>{code}</strong></p>
+                    <button className="back-btn" onClick={handleRetry}>
+                        Try Again
+                    </button>
+                    <button className="back-btn" style={{ marginTop: "10px", background: "#64748b" }} onClick={() => navigate("/studentdashboard")}>
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!quizData) return null;
+
+    const currentQuestion = quizData.questions[index];
+    const totalQuestions = quizData.questions.length;
+    const answeredCount = Object.keys(answers).length;
+    const isAllAnswered = answeredCount === totalQuestions;
+
+    if (isSubmitted) {
+        return (
+            <div className="quiz-wrapper">
+                <div className="quiz-container">
+                    <div className="quiz-main">
+                        <div className="result-area">
+                            <div className="result-icon">{isPassed ? "🎉" : "📚"}</div>
+                            <h2>{isPassed ? "Congratulations!" : "Quiz Completed!"}</h2>
+                            <p>{isPassed ? "You passed the quiz!" : "Keep practicing to improve your score."}</p>
+                            <div className="score-circle">
+                                <div className="score-number">{finalScore}</div>
+                                <div className="score-total">/{quizData.questions.length}</div>
+                            </div>
+                            <div className="percentage-text">{finalPercentage}%</div>
+                            <div className={`result-status ${isPassed ? "passed" : "failed"}`}>
+                                {isPassed ? "PASSED" : "NEEDS IMPROVEMENT"}
+                            </div>
+                            <button className="dashboard-btn" onClick={() => navigate("/studentdashboard")}>
+                                Back to Dashboard
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="quiz-wrapper">
+            <div className="quiz-container">
+                {/* Sidebar */}
+                <div className="quiz-sidebar">
+                    <h3>Quiz Navigator</h3>
+                    <p className="quiz-title">{quizData.title}</p>
+                    <div className="question-grid">
+                        {quizData.questions.map((_, i) => (
+                            <div
+                                key={i}
+                                className={`grid-item ${index === i ? 'active' : ''} ${answers[i] ? 'answered' : ''}`}
+                                onClick={() => jumpToQuestion(i)}
+                            >
+                                {i + 1}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="sidebar-stats">
+                        <div className="stat-item">
+                            <span className="stat-label">Answered:</span>
+                            <span className="stat-value">{answeredCount}/{totalQuestions}</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-label">Time left:</span>
+                            <span className={`stat-value timer-value ${timeLeft < 60 ? 'timer-warning' : ''}`}>
+                                ⏱️ {formatTime(timeLeft)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Main content with radio buttons */}
+                <div className="quiz-main">
+                    <div className="quiz-header">
+                        <span className="question-counter">Question {index + 1} of {totalQuestions}</span>
+                    </div>
+                    <hr />
+                    <h2>{currentQuestion.question}</h2>
+
+                    <div className="options-radio-group">
+                        {currentQuestion.options.map((opt, idx) => {
+                            const optionLetter = String.fromCharCode(65 + idx);
+                            const isChecked = answers[index] === opt;
+                            return (
+                                <label key={idx} className={`radio-option ${isChecked ? 'checked' : ''}`}>
+                                    <input
+                                        type="radio"
+                                        name={`question-${index}`}
+                                        value={opt}
+                                        checked={isChecked}
+                                        onChange={handleOptionChange}
+                                        disabled={isSubmitted}
+                                    />
+                                    <span className="radio-custom"></span>
+                                    <span className="radio-letter">{optionLetter}</span>
+                                    <span className="radio-text">{opt}</span>
+                                </label>
+                            );
+                        })}
+                    </div>
+
+                    <div className="quiz-controls">
+                        <button className="prev-btn" disabled={index === 0} onClick={() => setIndex(index - 1)}>
+                            ← Previous
+                        </button>
+                        {index < totalQuestions - 1 ? (
+                            <button className="next-btn" onClick={() => setIndex(index + 1)}>
+                                Next →
+                            </button>
+                        ) : (
+                            <button className="submit-btn" onClick={submitQuiz}>
+                                Submit Quiz
+                            </button>
+                        )}
+                    </div>
+                    <div className="index">
+                        {!isAllAnswered && (
+                            <span>⚠️ {totalQuestions - answeredCount} question(s) unanswered</span>
+                        )}
+                        {isAllAnswered && (
+                            <span>✅ All answered – ready to submit!</span>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Quiz;

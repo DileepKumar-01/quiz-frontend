@@ -16,8 +16,10 @@ const Quiz = () => {
     const [finalPercentage, setFinalPercentage] = useState(0);
     const [isPassed, setIsPassed] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [loadingMessage, setLoadingMessage] = useState("Loading your quiz...");
     const [timeLeft, setTimeLeft] = useState(null);
     const [error, setError] = useState(null);
+    const [retryCount, setRetryCount] = useState(0);
 
     useEffect(() => {
         if (!user) navigate("/");
@@ -25,28 +27,71 @@ const Quiz = () => {
 
     useEffect(() => {
         const fetchQuiz = async () => {
+            if (!code || !user) return;
+            
             try {
                 setLoading(true);
-                const res = await fetch(`https://quiz-backend-68mu.onrender.com/api/quiz/quiz-by-code/${code}`);
-                const data = await res.json();
-                if (!res.ok) {
-                    if (res.status === 403) setError(data.message);
-                    else setError(data.message || "Quiz not found");
+                setLoadingMessage("Fetching quiz data...");
+                
+                // Add timeout to prevent infinite loading
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
+                const response = await fetch(`https://quiz-backend-68mu.onrender.com/api/quiz/quiz-by-code/${code}`, {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        setError(data.message || "Quiz not available yet");
+                    } else if (response.status === 404) {
+                        setError(`Quiz with code "${code}" not found. Please check the code and try again.`);
+                    } else {
+                        setError(data.message || "Server error. Please try again.");
+                    }
+                    setLoading(false);
                     return;
                 }
+                
+                if (!data.questions || data.questions.length === 0) {
+                    setError("This quiz has no questions.");
+                    setLoading(false);
+                    return;
+                }
+                
                 setQuizData(data);
                 if (data.duration) setTimeLeft(data.duration * 60);
-            } catch (err) {
-                setError("Network error. Please check your connection.");
-            } finally {
                 setLoading(false);
+                
+            } catch (err) {
+                console.error("Fetch error:", err);
+                if (err.name === 'AbortError') {
+                    if (retryCount < 2) {
+                        setLoadingMessage(`Connection timeout. Retrying... (${retryCount + 1}/2)`);
+                        setTimeout(() => {
+                            setRetryCount(prev => prev + 1);
+                        }, 2000);
+                    } else {
+                        setError("Connection timeout. Please check your internet connection.");
+                        setLoading(false);
+                    }
+                } else {
+                    setError("Network error. Please check your connection.");
+                    setLoading(false);
+                }
             }
         };
-        if (code && user) fetchQuiz();
-    }, [code, user]);
+        
+        fetchQuiz();
+    }, [code, user, retryCount]);
 
+    // Timer countdown effect
     useEffect(() => {
         if (timeLeft === null || timeLeft <= 0 || isSubmitted) return;
+        
         const timerId = setInterval(() => {
             setTimeLeft(prev => {
                 if (prev <= 1) {
@@ -57,6 +102,7 @@ const Quiz = () => {
                 return prev - 1;
             });
         }, 1000);
+        
         return () => clearInterval(timerId);
     }, [timeLeft, isSubmitted]);
 
@@ -87,8 +133,12 @@ const Quiz = () => {
 
     const processSubmission = async () => {
         if (isSubmitted) return;
+        
+        setLoading(true);
+        setLoadingMessage("Submitting your quiz...");
+        
         try {
-            const res = await fetch("https://quiz-backend-68mu.onrender.com/api/quiz/submit-quiz", {
+            const response = await fetch("https://quiz-backend-68mu.onrender.com/api/quiz/submit-quiz", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -98,30 +148,71 @@ const Quiz = () => {
                     answers: answers
                 })
             });
-            const data = await res.json();
-            if (res.ok) {
+            
+            const data = await response.json();
+            setLoading(false);
+            
+            if (response.ok) {
                 setFinalScore(data.score);
                 setFinalPercentage(data.percentage || Math.round((data.score / data.totalMarks) * 100));
                 setIsPassed(data.passed || (data.score / data.totalMarks) >= 0.5);
                 setIsSubmitted(true);
             } else {
-                alert(data.message || "Submission failed.");
+                alert(data.message || "Submission failed. Please try again.");
             }
         } catch (err) {
-            alert("Network error during submission.");
+            setLoading(false);
+            alert("Network error during submission. Please check your connection.");
         }
     };
 
-    if (loading) return <div className="quiz-loading"><div className="loading-spinner"></div><p>Loading quiz...</p></div>;
-    if (error) return (
-        <div className="quiz-error-container">
-            <div className="error-card">
-                <div className="error-icon">⏰</div>
-                <h2>{error}</h2>
-                <button className="back-btn" onClick={() => navigate("/studentdashboard")}>Back to Dashboard</button>
+    const handleRetry = () => {
+        setError(null);
+        setRetryCount(0);
+        setLoading(true);
+        window.location.reload();
+    };
+
+    // Loading state
+    if (loading && !quizData && !error) {
+        return (
+            <div className="quiz-loading">
+                <div className="loading-spinner"></div>
+                <p>{loadingMessage}</p>
+                {loadingMessage.includes("Retrying") && (
+                    <p style={{ fontSize: "12px", color: "#64748b", marginTop: "10px" }}>
+                        Please wait...
+                    </p>
+                )}
             </div>
-        </div>
-    );
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className="quiz-error-container">
+                <div className="error-card">
+                    <div className="error-icon">⚠️</div>
+                    <h2>{error}</h2>
+                    <p style={{ marginTop: "10px", fontSize: "14px" }}>
+                        Quiz Code: <strong>{code}</strong>
+                    </p>
+                    <button className="back-btn" onClick={handleRetry} style={{ marginTop: "20px" }}>
+                        Try Again
+                    </button>
+                    <button 
+                        className="back-btn" 
+                        onClick={() => navigate("/studentdashboard")} 
+                        style={{ marginTop: "10px", background: "#64748b" }}
+                    >
+                        Back to Dashboard
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if (!quizData) return null;
 
     const currentQuestion = quizData.questions[index];
@@ -129,6 +220,7 @@ const Quiz = () => {
     const answeredCount = Object.keys(answers).length;
     const isAllAnswered = answeredCount === totalQuestions;
 
+    // Submitted view
     if (isSubmitted) {
         return (
             <div className="quiz-wrapper">
@@ -137,7 +229,7 @@ const Quiz = () => {
                         <div className="result-area">
                             <div className="result-icon">{isPassed ? "🎉" : "📚"}</div>
                             <h2>{isPassed ? "Congratulations!" : "Quiz Completed!"}</h2>
-                            <p>{isPassed ? "You passed!" : "Keep practicing."}</p>
+                            <p>{isPassed ? "You passed the quiz!" : "Keep practicing to improve your score."}</p>
                             <div className="score-circle">
                                 <div className="score-number">{finalScore}</div>
                                 <div className="score-total">/{quizData.questions.length}</div>
@@ -146,7 +238,9 @@ const Quiz = () => {
                             <div className={`result-status ${isPassed ? "passed" : "failed"}`}>
                                 {isPassed ? "PASSED" : "NEEDS IMPROVEMENT"}
                             </div>
-                            <button className="dashboard-btn" onClick={() => navigate("/studentdashboard")}>Back to Dashboard</button>
+                            <button className="dashboard-btn" onClick={() => navigate("/studentdashboard")}>
+                                Back to Dashboard
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -154,6 +248,7 @@ const Quiz = () => {
         );
     }
 
+    // Active quiz view
     return (
         <div className="quiz-wrapper">
             <div className="quiz-container">
@@ -179,7 +274,9 @@ const Quiz = () => {
                         </div>
                         <div className="stat-item">
                             <span className="stat-label">Time left:</span>
-                            <span className="stat-value timer-value">{formatTime(timeLeft)}</span>
+                            <span className={`stat-value timer-value ${timeLeft < 60 ? 'timer-warning' : ''}`}>
+                                {formatTime(timeLeft)}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -215,16 +312,26 @@ const Quiz = () => {
                     </div>
 
                     <div className="quiz-controls">
-                        <button className="prev-btn" disabled={index === 0} onClick={() => setIndex(index - 1)}>← Previous</button>
+                        <button className="prev-btn" disabled={index === 0} onClick={() => setIndex(index - 1)}>
+                            ← Previous
+                        </button>
                         {index < totalQuestions - 1 ? (
-                            <button className="next-btn" onClick={() => setIndex(index + 1)}>Next →</button>
+                            <button className="next-btn" onClick={() => setIndex(index + 1)}>
+                                Next →
+                            </button>
                         ) : (
-                            <button className="submit-btn" onClick={submitQuiz}>Submit Quiz</button>
+                            <button className="submit-btn" onClick={submitQuiz}>
+                                Submit Quiz
+                            </button>
                         )}
                     </div>
                     <div className="index">
-                        {!isAllAnswered && <span>⚠️ {totalQuestions - answeredCount} unanswered</span>}
-                        {isAllAnswered && <span>✅ All answered – ready to submit!</span>}
+                        {!isAllAnswered && (
+                            <span>⚠️ {totalQuestions - answeredCount} question(s) unanswered</span>
+                        )}
+                        {isAllAnswered && (
+                            <span>✅ All answered – ready to submit!</span>
+                        )}
                     </div>
                 </div>
             </div>
